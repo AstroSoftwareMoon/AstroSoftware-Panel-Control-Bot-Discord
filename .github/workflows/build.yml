@@ -30,28 +30,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller customtkinter discord.py psutil requests
 
-      - name: Build Windows Executable
+      - name: Build Windows Executable (.exe directo)
         if: matrix.os == 'windows-latest'
         run: |
-          pyinstaller --noconfirm --onedir --windowed --icon "asbotlogo.ico" --add-data "locales;locales" --add-data "asbotlogo.ico;." --name "AstroBot" "astrobot.py"
-          Compress-Archive -Path dist/AstroBot/* -DestinationPath AstroBot-Windows.zip
+          pyinstaller --noconfirm --onefile --windowed --icon "asbotlogo.ico" --add-data "locales;locales" --add-data "asbotlogo.ico;." --name "AstroBot" "astrobot.py"
 
-      - name: Build Linux Executable
+      - name: Build Linux Executable (binario directo)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          pyinstaller --noconfirm --onedir --windowed --add-data "locales:locales" --add-data "asbotlogo.ico:." --name "AstroBot" "astrobot.py"
-          cd dist/AstroBot
-          zip -r ../../AstroBot-Linux.zip *
-          cd ../..
+          pyinstaller --noconfirm --onefile --windowed --add-data "locales:locales" --add-data "asbotlogo.ico:." --name "AstroBot-Linux" "astrobot.py"
 
-      - name: Upload Release Asset (Windows)
+      - name: Upload Windows .EXE to Release
         if: matrix.os == 'windows-latest' && github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: AstroBot-Windows.zip
+          files: dist/AstroBot.exe
 
-      - name: Upload Release Asset (Linux)
+      - name: Upload Linux Binary to Release
         if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: AstroBot-Linux.zip
+          files: dist/AstroBot-Linux
